@@ -202,30 +202,11 @@ def deploy_askbot(options):
 def collect_missing_options(options_dict):
     options_dict['secret_key'] = generate_random_key()
     if options_dict['database_engine'] == '2':#sqlite
-        while True:
-            value = console.simple_dialog(
-                            'Please enter database file name'
-                        )
-            database_file_name = None
-            if os.path.isfile(value):
-                message = 'file %s exists, use it anyway?' % value
-                if console.get_yes_or_no(message) == 'yes':
-                    database_file_name = value
-            elif os.path.isdir(value):
-                print '%s is a directory, choose another name' % value
-            elif value in path_utils.FILES_TO_CREATE:
-                print 'name %s cannot be used for the database name' % value
-            elif value == path_utils.LOG_DIR_NAME:
-                print 'name %s cannot be used for the database name' % value
-            else:
-                database_file_name = value
-
-            if database_file_name:
-                options_dict['database_name'] = database_file_name
-                return options_dict
+        options_dict['database_name'] = options_dict['database_name'] + '.sqlite3'
+        return options_dict
 
     else:#others
-        for key in ('database_name', 'database_user', 'database_password'): 
+        for key in ('database_name', 'database_user', 'database_password'):
             if options_dict[key] is None:
                 key_name = key.replace('_', ' ')
                 value = console.simple_dialog(
