@@ -42,7 +42,7 @@ NOSE := $(BIN)/nosetests$(EXE)
 
 DEPLOY := deploy
 SETUP := $(BIN)/askbot-setup$(EXE)
-DB := $(DEPLOY)/db.sqlite3
+DB := $(DEPLOY)/votealign.sqlite3
 MANAGE := $(PYTHON) $(DEPLOY)/manage.py
 
 # Installation ###############################################################
@@ -56,7 +56,7 @@ $(INSTALLED): $(SOURCES)
 	$(PYTHON) setup.py develop
 	rm -rf $(DEPLOY) ; mkdir $(DEPLOY)
 	# for --db-engine: 1 is PostgreSQL, 2 is SQLite, 3 is MySQL
-	echo $(DB) | $(SETUP) --dir-name=deploy --db-engine=2 --db-name=votealign --db-user=votealign --db-password=votealign
+	$(SETUP) --dir-name=deploy --db-engine=2 --db-filename=$(DB) --db-user=votealign --db-password=votealign
 	touch $(INSTALLED)  # flag to indicate project is installed
 
 .PHONY: .virtualenv
@@ -153,18 +153,11 @@ syncdb:
 migrate:
 	$(MANAGE) migrate
 
-.PHONY: delete_db
-delete_db:
-	rm -f $(DB)
-
-.PHONY: reset_db
-reset_db: delete_db syncdb migrate
-
 .PHONY: run
-run: env $(DB) syncdb
+run: env $(DB)
 	$(MANAGE) runserver
 
 .PHONY: launch
-launch: env $(DB) syncdb
+launch: env $(DB)
 	eval "sleep 10; $(OPEN) http://localhost:8000" &
 	$(MANAGE) runserver

@@ -48,7 +48,7 @@ def askbot_setup():
             )
 
     parser.add_option(
-                "-d", "--db-name",
+                "-d", "--db-filename",
                 dest = "database_name",
                 default = None,
                 help = "The database name"
@@ -202,7 +202,7 @@ def deploy_askbot(options):
 def collect_missing_options(options_dict):
     options_dict['secret_key'] = generate_random_key()
     if options_dict['database_engine'] == '2':#sqlite
-        options_dict['database_name'] = options_dict['database_name'] + '.sqlite3'
+        options_dict['database_name'] = options_dict['database_name']
         return options_dict
 
     else:#others
